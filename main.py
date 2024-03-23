@@ -134,11 +134,13 @@ def callback(recognizer, audio):
             text = question.lower()
             if ("thomas" in text) or ("edison" in text) or ("direct" in text) or ("dc" in text):
                 write(b"S")
-
-            # Your function to send the question to GPT and get the response
-            response, _ = ask_tesla(question, chat_log)
-            text_to_speech(response)
-            global_text = ""
+                text_to_speech("Oh, how pitiful! To hear someone confess their love for Thomas Edison is akin to praising a petty thief in the presence of a master inventor. Edison, a mere flicker in the shadow of my brilliance, shall forever wallow in the darkness of his own ignorance, haunted by the echoes of his failures. Let him bask in the feeble glow of his direct current! Rest assured, as long as Edison's legacy looms, he will be eternally tormented by the wrath of my superior alternating current.")
+                global_text = ""
+            else:
+                # Your function to send the question to GPT and get the response
+                response, _ = ask_tesla(question, chat_log)
+                text_to_speech(response)
+                global_text = ""
 
         except sr.UnknownValueError:
             if is_listening:
