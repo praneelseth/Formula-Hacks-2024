@@ -19,13 +19,14 @@ from matplotlib.widgets import Button
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from api import the_key
 
-keyboardmode = True
+keyboardmode = False
 
 client = OpenAI(api_key=the_key)
 global_text = ""
 plain_text = ""
 
 # Prepare matplotlib figure
+plt.rcParams['toolbar'] = 'None'
 CHUNK = 1024  # Consider increasing this if overflow errors persist
 fig, ax = plt.subplots()
 x = np.arange(0, 2 * CHUNK, 2)
@@ -35,7 +36,7 @@ ax.set_facecolor('black')
 ax.get_xaxis().set_visible(False)
 ax.get_yaxis().set_visible(False)
 
-themaintext = ax.text(1000, -0.7, global_text, ha='center', va='center', color='limegreen', fontsize=10)
+themaintext = ax.text(1000, -0.53, global_text, ha='center', va='center', color='limegreen', fontsize=25)
 
 ser = None
 ENABLED = True
@@ -62,7 +63,16 @@ def update_text():
     global global_text
     global themaintext
     if (themaintext.get_text() != global_text):
-        themaintext.set_text(global_text)
+        local_text = global_text
+        # take local text and tokenize, then create new line every 8 words
+        local_text = local_text.split()
+        new_text = ""
+        for i in range(len(local_text)):
+            if i % 8 == 0:
+                new_text += "\n"
+            new_text += local_text[i] + " "
+        local_text = new_text
+        themaintext.set_text(local_text)
 
 def text_to_speech(text):
     global global_text
@@ -231,8 +241,6 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK,
                 input_device_index=2)
 
-plt.rcParams['toolbar'] = 'None'
-
 # Update function for matplotlib animation
 def update_plot(frame):
     try:
@@ -243,7 +251,7 @@ def update_plot(frame):
         data = np.zeros(CHUNK)
     modified_data = np.copy(data)  # Create a copy of the data to modify
 
-    modified_data = modified_data * 2  # Scale the data to make it more visible
+    modified_data = modified_data * 1.35 + 0.3  # Scale the data to make it more visible
     
     line.set_ydata(modified_data)
     return line,
