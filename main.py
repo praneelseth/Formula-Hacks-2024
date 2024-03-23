@@ -74,6 +74,12 @@ def update_text():
         local_text = new_text
         themaintext.set_text(local_text)
 
+
+def write_ts():
+    while True:
+        ser.write(b"t")
+        time.sleep(0.1)
+
 def text_to_speech(text):
     global global_text
     global_text = text
@@ -82,6 +88,9 @@ def text_to_speech(text):
     text = text.replace("'", "")
     text = text.replace("(", "")
     text = text.replace(")", "")
+    
+    thr = threading.Thread(target=write_ts)
+    thr.start()
     os.system("say " + text)
 
 # Function to initialize conversation with context
@@ -232,8 +241,11 @@ RATE = 44100
 # Initialize PyAudio
 p = pyaudio.PyAudio()
 
-info = p.get_host_api_info_by_index(0)
-numdevices = info.get('deviceCount')
+# info = p.get_host_api_info_by_index(0)
+# numdevices = info.get('deviceCount')
+# for i in range(0, numdevices):
+#     if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+#         print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
 
 # Open stream
 stream = p.open(format=FORMAT,
@@ -241,7 +253,7 @@ stream = p.open(format=FORMAT,
                 rate=RATE,
                 input=True,
                 frames_per_buffer=CHUNK,
-                input_device_index=2)
+                input_device_index=1)
 
 # Update function for matplotlib animation
 def update_plot(frame):
